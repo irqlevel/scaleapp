@@ -1,0 +1,16 @@
+body {
+  padding-top: 50px;
+}
+.starter-template {
+  padding: 40px 15px;
+  text-align: center;
+}
+
+.error-text {
+	color : red;
+	font-size : 200%;
+}
+
+.login-input {
+	text-align : left;
+}

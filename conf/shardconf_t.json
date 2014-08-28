@@ -1,0 +1,8 @@
+{
+	"db" : "{{db}}_{{vsid}}",
+	"usr" : "{{usr}}_{{vsid}}",
+	"usr_pass" : "{{usr_pass}}",
+	"node" : "{{node}}",
+	"vsid" : {{vsid}},
+	"nodeIds" : "{{nodeIds}}"
+}
