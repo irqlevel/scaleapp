@@ -38,3 +38,4 @@ EXPOSE 80
 #CMD servicr nginx start
 #ENTRYPOINT nginx/sbin/nginx
 ENTRYPOINT nginx/sbin/nginx
+

@@ -32,6 +32,9 @@ RUN git clone https://github.com/irqlevel/scaleapp.git
 
 RUN cd /scaleapp && /apache-maven-3.2.3/bin/mvn package
 
+COPY run.sh run.sh
+RUN chmod +x run.sh
+
 VOLUME /scaleapp
 
 # Expose ports
@@ -40,5 +43,7 @@ EXPOSE 8080
 # Set the default command to execute
 # when creating a new container
 #CMD /bin/bash
-CMD cd scaleapp/ && java -cp target/myapp-jar-with-dependencies.jar com.mycompany.myapp.App
+ENTRYPOINT ./run.sh
+
+
 
