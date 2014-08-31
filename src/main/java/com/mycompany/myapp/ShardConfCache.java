@@ -25,6 +25,40 @@ public class ShardConfCache {
 		
 	}
 	
+	public boolean put(ShardConf conf) throws Base64DecoderException
+	{
+		boolean success = false;
+		synchronized(this) {
+			log.info("putting conf with vsid=" + conf.vsid);
+			if (vsidConfMap.get(conf.vsid) == null) {
+				vsidConfMap.put(conf.vsid, conf);
+				for (BigInteger id : conf.getIntNodeIds()) {
+					nodeIdConfTree.put(id, conf);
+					log.info("vsid=" + conf.vsid + " nodeId=" + id);
+				}
+				success = true;
+			}
+		}
+		
+		return success;
+	}
+	
+	public boolean delete(int vsid) throws Base64DecoderException {
+		boolean success = false;
+		synchronized(this) {
+			log.info("deleting conf with vsid=" + vsid);
+			ShardConf conf = vsidConfMap.remove(vsid);
+			if (conf != null) { 
+				for (BigInteger id : conf.getIntNodeIds()) {
+					nodeIdConfTree.delete(id);
+				}
+				success = true;
+			}
+		}
+		
+		return success;
+	}
+	
 	private void setup() throws Base64DecoderException {
 		List<String> files = FileOps.getFileNames(FileSystems.getDefault().getPath("conf"));
 		for (String file : files) {

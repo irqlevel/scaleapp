@@ -16,22 +16,28 @@ public class SqlCon {
     private static final Logger log = LoggerFactory.getLogger(User.class);
     
 	public static Connection getCon(int vsid) throws SQLException {
+		ShardConf conf = ShardConfCache.getInstance().getByVsid(vsid);
+		return getCon(conf);
+	}
+	
+	public static Connection getCon(ShardConf conf) throws SQLException {
 		PGPoolingDataSource source = null;
 		
-		if ((source = sourceMap.get(vsid)) == null) {
+		if ((source = sourceMap.get(conf.vsid)) == null) {
 			synchronized(SqlCon.class) {
-				source = sourceMap.get(vsid);
+				source = sourceMap.get(conf.vsid);
 				if (source == null) {
-					ShardConf conf = ShardConfCache.getInstance().getByVsid(vsid);
 					
 					source = new PGPoolingDataSource();
-					source.setDataSourceName("shard ds " + vsid);
+					source.setDataSourceName("shard ds " + conf.vsid);
 					source.setServerName(conf.node);
 					source.setDatabaseName(conf.db);
 					source.setUser(conf.usr);
 					source.setPassword(conf.usr_pass);
 					source.setMaxConnections(10);
-					sourceMap.put(vsid, source);
+					source.setPortNumber(conf.portNumber);
+					
+					sourceMap.put(conf.vsid, source);
 				}
 			}
 		}

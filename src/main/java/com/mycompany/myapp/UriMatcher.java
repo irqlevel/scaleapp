@@ -72,6 +72,40 @@ public class UriMatcher implements INsHttpServerHandler {
 		return response;
 	}
 	
+	
+	private NsHttpResponse shards(NsHttpRequest request, int vsid) throws Exception {
+		NsHttpResponse response = new NsHttpResponse();
+		
+		switch (request.getMethod()) {
+			case NsHttpRequest.PUT:
+				ShardConf conf = ShardConf.loadFromString(new String(request.getContentBytes(), "UTF-8"));
+				if (conf.vsid != vsid) {
+					throw new Exception("conf.vsid=" + conf.vsid + " vs. vsid=" + vsid);			
+				}
+				
+				if (ShardConfCache.getInstance().put(conf)) {
+					response.setStatus(NsHttpResponse.OK);
+				} else {
+					log.error("not found shard with vsid=" + vsid);
+					response.setStatus(NsHttpResponse.INTERNAL_SERVER_ERROR);
+				}
+				
+				break;
+			case NsHttpRequest.DELETE:
+				if (ShardConfCache.getInstance().delete(vsid)) {
+					response.setStatus(NsHttpResponse.OK);
+				} else {
+					log.error("not found shard with vsid=" + vsid);
+					response.setStatus(NsHttpResponse.NOT_FOUND);
+				}
+				break;
+			default:
+				throw new Exception("unsupported method=" + request.getMethod());
+		}
+		
+		return response;
+	}
+	
 	private NsHttpResponse renderTemplate(String name, Map<String, Object> params) throws UnsupportedEncodingException {
 		NsHttpResponse response = new NsHttpResponse();
 		String content = null;
@@ -206,6 +240,13 @@ public class UriMatcher implements INsHttpServerHandler {
 				// TODO Auto-generated method stub
 				
 				return staticFiles(request, match.group(1));
+			}});
+		
+		handlers.put(Pattern.compile("^/shards/(\\d+)$"), new UriHandler() {
+			@Override
+			public NsHttpResponse handle(Matcher match, NsHttpRequest request) throws Exception {
+				// TODO Auto-generated method stub
+				return shards(request, Integer.parseInt(match.group(1)));
 			}});
 	}
 	

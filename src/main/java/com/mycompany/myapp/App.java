@@ -134,7 +134,7 @@ public class App
     private void dbStart()
     {
     	ShardConfCache.getInstance();
-    	dhtTest();
+    	//dhtTest();
     	//dbUsersTest();
     }
     
@@ -175,6 +175,7 @@ public class App
     	log.info("My host name is " + InetAddress.getLocalHost().getHostName());
     	slogStart();
     	loadSignKp();
+    	dbStart();
     	httpStart();
     	//dbStart();
     	//serverStart();
