@@ -2,6 +2,8 @@ package com.mycompany.myapp;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.security.KeyPair;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -167,8 +169,10 @@ public class App
 		}
     }
 
-    public void start() {
+    public void start() throws UnknownHostException {
     	log.info("App starting");
+    	
+    	log.info("My host name is " + InetAddress.getLocalHost().getHostName());
     	slogStart();
     	loadSignKp();
     	httpStart();
@@ -177,7 +181,7 @@ public class App
         log.info("App started");
     }
     
-    public static void main( String[] args )
+    public static void main( String[] args ) throws UnknownHostException
     {
     	App.getInstance().start();
     }
