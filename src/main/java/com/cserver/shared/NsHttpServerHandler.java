@@ -67,9 +67,7 @@ public class NsHttpServerHandler extends ChannelInboundHandlerAdapter { // (1)
     	if (keepAlive)
     		rawResponse.headers().set(Names.CONNECTION, Values.KEEP_ALIVE);
     	
-   		ctx.write(rawResponse);
-    	
-    	ChannelFuture future = ctx.writeAndFlush(LastHttpContent.EMPTY_LAST_CONTENT);
+    	ChannelFuture future = ctx.writeAndFlush(rawResponse);
     	if (!keepAlive) {
     		future.addListener(ChannelFutureListener.CLOSE);
     	}
