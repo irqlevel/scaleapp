@@ -2,12 +2,14 @@ package com.mycompany.myapp;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,10 +41,21 @@ public class Cluster {
 		boolean success = false;
 		log.info("setup db=" + node + " id=" + id + " port=" + port);
 		
-		ShardConf conf = shards.get(id);
-		Map<String, Object> params = new HashMap<String, Object>();
-		params.put("vsid", id);
-		log.info("result=" + SqlTemplate.render("db_init.sql", params));
+		Connection con = null;
+		PreparedStatement st = null;
+		try {
+			con = SqlCon.getCon(shards.get(id));
+			Map<String, Object> params = new HashMap<String, Object>();
+			params.put("vsid", id);
+			st = con.prepareStatement(SqlTemplate.render("db_init.sql", params));
+			st.executeUpdate();
+			con.commit();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			log.error("exception", e);
+		} finally {
+			SqlCon.close(con, st, null);
+		}
 		
 		return success;
 	}
