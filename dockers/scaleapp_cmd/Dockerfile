@@ -40,6 +40,7 @@ VOLUME /scaleapp
 # Expose ports
 EXPOSE 8080
 
+RUN yum -y install postgresql
 # Set the default command to execute
 # when creating a new container
 #CMD /bin/bash

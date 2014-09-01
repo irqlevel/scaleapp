@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cserver.shared.SLog;
+import com.cserver.shared.HttpConn;
 
 public class Cluster {
 	private static final String TAG = "Cluster";
@@ -23,7 +24,6 @@ public class Cluster {
     public static final int PRE_SETUP = 1;
     public static final int SETUP = 2;
     private static Map<Integer, ShardConf> shards = new TreeMap<Integer, ShardConf>();
-    private static final String dbTemplatesPath = "scripts/db/";
     
 	static private void slogStart() {
 		SLog.start(false, new File("slog.log").getAbsolutePath(), new PostLogger());
@@ -34,6 +34,17 @@ public class Cluster {
 	public static boolean setupApp(String node, int id, int port) {
 		boolean success = false;
 		log.info("setup node=" + node + " id=" + id + " port=" + port);
+		
+		for (Integer vsid : shards.keySet()) {
+			ShardConf conf = shards.get(vsid);
+			try {
+				HttpConn.put("http", node, port, "/shards/" + vsid, conf.toString());
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				log.error("exception=", e);
+			}
+		}
+		
 		return success;
 	}
 	
