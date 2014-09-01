@@ -79,6 +79,8 @@ public class UriMatcher implements INsHttpServerHandler {
 		switch (request.getMethod()) {
 			case NsHttpRequest.PUT:
 				ShardConf conf = ShardConf.loadFromString(new String(request.getContentBytes(), "UTF-8"));
+				log.info("loading conf=" + conf.toString());
+				
 				if (conf.vsid != vsid) {
 					throw new Exception("conf.vsid=" + conf.vsid + " vs. vsid=" + vsid);			
 				}

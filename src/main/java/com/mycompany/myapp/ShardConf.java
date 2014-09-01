@@ -58,7 +58,6 @@ public class ShardConf {
 		return conf;
 	}
 	
-	
 	public static ShardConf loadFromFile(File file) {
 		String json = FileOps.readFile(file);
 		return loadFromString(json);

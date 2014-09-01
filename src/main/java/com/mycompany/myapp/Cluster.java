@@ -25,11 +25,6 @@ public class Cluster {
     public static final int SETUP = 2;
     private static Map<Integer, ShardConf> shards = new TreeMap<Integer, ShardConf>();
     
-	static private void slogStart() {
-		SLog.start(false, new File("slog.log").getAbsolutePath(), new PostLogger());
-		SLog.getInstance().setLogSize(3000000);
-		SLog.i(TAG, "slog starting...");
-	}
 	
 	public static boolean setupApp(String node, int id, int port) {
 		boolean success = false;
@@ -153,7 +148,7 @@ public class Cluster {
 				"app3.scaleapp_img.dev.docker:8080", "db1.pgsql_img.dev.docker:5432", "db2.pgsql_img.dev.docker:5432",
 				"db3.pgsql_img.dev.docker:5432"};
 		
-		slogStart();
+		SLog.startDefault();
 
 		Integer [] cmds = {PRE_SETUP, SETUP};
 		for (Integer cmd : cmds) {

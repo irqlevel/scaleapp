@@ -1,17 +1,23 @@
 package com.cserver.shared;
 
-import java.io.UnsupportedEncodingException;
 import java.security.KeyPair;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+import io.netty.handler.codec.http.HttpContent;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpHeaders.Names;
 
 public class NsHttpRequest {
 	private HttpRequest request = null;
+	private List<byte[]> chunks = new ArrayList<byte[]>();
+	
 	private int method = -1;
 	
 	public static final int GET = 1;
@@ -19,9 +25,7 @@ public class NsHttpRequest {
 	public static final int PUT = 3;
 	public static final int HEAD = 4;
 	public static final int DELETE = 5;
-	
-	private long contentLength = -1;
-	private byte[] content = null;
+	private static final String TAG = "NsHttpRequest";
 	private String contentType = null;
 	
 	private Map<String, String> cookies = new HashMap<String, String>();
@@ -43,20 +47,39 @@ public class NsHttpRequest {
 	}
 	
 	public byte[] getContentBytes() {
-		return this.content;
+		int size = (int) countContentLength();
+		byte[] total = new byte[size];
+		int pos = 0;
+		for (byte[] chunk : chunks) {
+			for (int i = 0; i < chunk.length; i++) {
+				total[pos++] = chunk[i];
+			}
+		}
+		//SLog.i(TAG, "contentBytes.length=" + total.length);
+		
+		return total;
+	}
+	
+	public void appendContent(HttpContent chunk) {
+		int chunkSize = chunk.content().readableBytes();
+		byte[] chunkBytes = new byte[chunkSize];
+		ByteBuf bb = Unpooled.wrappedBuffer(chunkBytes);
+		bb.setIndex(0, 0);
+		chunk.content().readBytes(bb);
+		chunks.add(chunkBytes);
+		bb.release();
+	}
+	
+	public long countContentLength() {
+		long length = 0;
+		for (byte[] bytes : chunks) {
+			length+= bytes.length;
+		}
+		return length;
 	}
 	
 	public long getContentLength() {
-		if (contentLength != -1)
-			return contentLength;
-		
-		try {
-			contentLength = Integer.parseInt(this.request.headers().get(Names.CONTENT_LENGTH));
-		} catch (Exception e) {
-			contentLength = 0;
-		}
-		
-		return contentLength;
+		return countContentLength();
 	}
 	
 	public String getContentType() {

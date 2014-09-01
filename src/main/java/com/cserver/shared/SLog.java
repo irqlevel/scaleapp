@@ -17,6 +17,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import com.mycompany.myapp.PostLogger;
+
 
 class MsgWriteTask implements Runnable {
 	SLog log = null;
@@ -60,6 +62,11 @@ public class SLog {
 	
 	private File getSavedFile() {
 		return new File(logPath + ".old.log");		
+	}
+	
+	public static void startDefault() {
+		SLog.start(false, new File("slog.log").getAbsolutePath(), new PostLogger());
+		SLog.getInstance().setLogSize(3000000);
 	}
 	
 	public static SLog getInstance() {

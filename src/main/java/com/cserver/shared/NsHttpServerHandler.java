@@ -15,6 +15,7 @@ import io.netty.channel.ChannelProgressiveFutureListener;
 import io.netty.channel.DefaultFileRegion;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.HttpChunkedInput;
+import io.netty.handler.codec.http.HttpContent;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpHeaders.Names;
 import io.netty.handler.codec.http.HttpHeaders.Values;
@@ -54,6 +55,7 @@ public class NsHttpServerHandler extends ChannelInboundHandlerAdapter { // (1)
     private static final String TAG = "NsHttpServerHandler";
     private INsHttpServerHandler handler = null;
     private ExecutorService exec = null;
+    private NsHttpRequest request = null;
     
     public NsHttpServerHandler(INsHttpServerHandler handler, ExecutorService exec) {
     	this.handler = handler;
@@ -85,7 +87,19 @@ public class NsHttpServerHandler extends ChannelInboundHandlerAdapter { // (1)
 	        if (HttpHeaders.is100ContinueExpected(req)) {
 	        	ctx.write(new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.CONTINUE));
 	        }
-	    	this.exec.submit(new NsHttpHandlerExecTask(this, ctx, new NsHttpRequest(req)));
+	        request = new NsHttpRequest(req);
+    	} else if (msg instanceof HttpContent) {
+    		HttpContent chunk = (HttpContent) msg;
+			//SLog.i(TAG, "Content-Length=" + request.getHeaders(Names.CONTENT_LENGTH));
+			//SLog.i(TAG, "chunk bytes=" + chunk.content().readableBytes());
+    		if (request != null) {
+    			if (chunk.content().readableBytes() != 0)
+    				request.appendContent(chunk);
+    			
+        		if (chunk.content().readableBytes() == 0 || 
+        			(Long.parseLong(request.getHeaders(Names.CONTENT_LENGTH)) == request.countContentLength()))
+        			this.exec.submit(new NsHttpHandlerExecTask(this, ctx, request));
+    		}
     	}
     }
 	
