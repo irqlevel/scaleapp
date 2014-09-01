@@ -16,7 +16,7 @@ import com.cserver.shared.Utils;
 public class User {
     private static final Logger log = LoggerFactory.getLogger(User.class);
     private long id;    
-    private String username;    
+    private String username;
     
     public User() {
     	username = null;
@@ -46,7 +46,8 @@ public class User {
     	return Utils.getTimeS(ObjId.getTimeMillis(id));
     }
     
-    static public void insert(int vsid, User user) {
+    static public boolean insert(int vsid, User user) {
+    	boolean success = false;
     	Connection con = null;
     	PreparedStatement st = null;
     	try {
@@ -55,11 +56,13 @@ public class User {
     		st.setString(1, user.username);
     		st.executeUpdate();
     		con.commit();
+    		success = true;
     	} catch (SQLException e) {
     		log.error("exception", e);
     	} finally {
     		SqlCon.close(con, st, null);
     	}
+    	return success;
     }
     
     static public User load(long id) {

@@ -6,6 +6,7 @@ import java.nio.file.FileSystems;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +24,16 @@ public class ShardConfCache {
     
 	private ShardConfCache() {
 		
+	}
+	
+	public int getRandomShard() {
+		int vsid;
+		synchronized(this) {
+			Random generator = new Random(System.currentTimeMillis());
+			Integer[] vsids =  (Integer[])vsidConfMap.keySet().toArray();
+			vsid = vsids[generator.nextInt(vsids.length)];
+		}
+		return vsid;
 	}
 	
 	public boolean put(ShardConf conf) throws Base64DecoderException

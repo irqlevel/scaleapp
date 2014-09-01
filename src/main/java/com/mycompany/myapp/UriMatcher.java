@@ -108,6 +108,27 @@ public class UriMatcher implements INsHttpServerHandler {
 		return response;
 	}
 	
+	private NsHttpResponse userAdd(NsHttpRequest request) throws Exception {
+		NsHttpResponse response = new NsHttpResponse();
+		
+		switch (request.getMethod()) {
+			case NsHttpRequest.PUT:
+				UserAdd inf = UserAdd.parseString(new String(request.getContentBytes(), "UTF-8"));
+				log.info("adding user=" + inf.toString());
+				User user = new User();
+				user.setUserName(inf.username);
+				if (User.insert(ShardConfCache.getInstance().getRandomShard(), user))
+					response.setStatus(NsHttpResponse.OK);
+				else
+					response.setStatus(NsHttpResponse.INTERNAL_SERVER_ERROR);
+				break;
+			default:
+				throw new Exception("unsupported method=" + request.getMethod());
+		}
+		
+		return response;
+	}
+	
 	private NsHttpResponse renderTemplate(String name, Map<String, Object> params) throws UnsupportedEncodingException {
 		NsHttpResponse response = new NsHttpResponse();
 		String content = null;
@@ -249,6 +270,13 @@ public class UriMatcher implements INsHttpServerHandler {
 			public NsHttpResponse handle(Matcher match, NsHttpRequest request) throws Exception {
 				// TODO Auto-generated method stub
 				return shards(request, Integer.parseInt(match.group(1)));
+			}});
+		
+		handlers.put(Pattern.compile("^/user/add$"), new UriHandler() {
+			@Override
+			public NsHttpResponse handle(Matcher match, NsHttpRequest request) throws Exception {
+				// TODO Auto-generated method stub
+				return userAdd(request);
 			}});
 	}
 	
