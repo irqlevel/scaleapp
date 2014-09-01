@@ -30,7 +30,7 @@ public class ShardConfCache {
 		int vsid;
 		synchronized(this) {
 			Random generator = new Random(System.currentTimeMillis());
-			Integer[] vsids =  (Integer[])vsidConfMap.keySet().toArray();
+			Integer[] vsids =  (Integer[])vsidConfMap.keySet().toArray(new Integer[vsidConfMap.keySet().size()]);
 			vsid = vsids[generator.nextInt(vsids.length)];
 		}
 		return vsid;
