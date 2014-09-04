@@ -37,6 +37,6 @@ EXPOSE 80
 # when creating a new container
 #CMD servicr nginx start
 #ENTRYPOINT nginx/sbin/nginx
-#ENTRYPOINT senginx/sbin/nginx
+VOLUME senginx/
 ENTRYPOINT senginx/sbin/nginx
-
+#ENTRYPOINT /bin/bash

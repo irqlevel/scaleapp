@@ -90,6 +90,7 @@ public class HttpConn {
 			urlConnection.setRequestMethod("PUT");
 			
 			urlConnection.setDoOutput(true);
+			urlConnection.connect();
 			
 			byte[] rawData = data.getBytes(Charset.forName("UTF-8"));
 			//urlConnection.setChunkedStreamingMode(rawData.length);
@@ -98,7 +99,7 @@ public class HttpConn {
 			out.write(rawData);
 			out.flush();
 			out.close();
-			urlConnection.connect();
+
 			if (urlConnection.getResponseCode() != 200)
 				throw new Exception("PUT " + uri + " code=" + urlConnection.getResponseCode());
 		} catch (Exception e) {
@@ -121,8 +122,8 @@ public class HttpConn {
 			urlConnection.setConnectTimeout(5000);
 			urlConnection.setReadTimeout(5000);
 			urlConnection.setRequestMethod("PUT");
-			
 			urlConnection.setDoOutput(true);
+			urlConnection.connect();
 			
 			byte[] rawData = data.getBytes(Charset.forName("UTF-8"));
 			//urlConnection.setChunkedStreamingMode(rawData.length);
@@ -131,7 +132,6 @@ public class HttpConn {
 			out.write(rawData);
 			out.flush();
 			out.close();
-			urlConnection.connect();
 			if (urlConnection.getResponseCode() != 200)
 				throw new Exception("POST " + uri + " code=" + urlConnection.getResponseCode());
 			
