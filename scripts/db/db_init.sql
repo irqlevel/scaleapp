@@ -17,7 +17,8 @@ $$ LANGUAGE PLPGSQL;
 
 CREATE TABLE Users (
 	"id" bigint NOT NULL DEFAULT db_next_id(),
-	"username" varchar(255)
+	"username" varchar(255),
+	"hashp"	varchar(255)
 );
 
 CREATE TABLE DhtKeys (

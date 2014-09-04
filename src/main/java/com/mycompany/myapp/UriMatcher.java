@@ -85,7 +85,7 @@ public class UriMatcher implements INsHttpServerHandler {
 					throw new Exception("conf.vsid=" + conf.vsid + " vs. vsid=" + vsid);			
 				}
 				
-				if (ShardConfCache.getInstance().put(conf)) {
+				if (ShardConfCache.getInstance().update(conf)) {
 					response.setStatus(NsHttpResponse.OK);
 				} else {
 					log.error("not found shard with vsid=" + vsid);
@@ -108,19 +108,28 @@ public class UriMatcher implements INsHttpServerHandler {
 		return response;
 	}
 	
-	private NsHttpResponse userAdd(NsHttpRequest request) throws Exception {
+	private NsHttpResponse userJoin(NsHttpRequest request) throws Exception {
 		NsHttpResponse response = new NsHttpResponse();
 		
 		switch (request.getMethod()) {
 			case NsHttpRequest.PUT:
-				UserAdd inf = UserAdd.parseString(new String(request.getContentBytes(), "UTF-8"));
+				UserJoin inf = UserJoin.parseString(new String(request.getContentBytes(), "UTF-8"));
 				log.info("adding user=" + inf.toString());
 				User user = new User();
 				user.setUserName(inf.username);
-				if (User.insert(ShardConfCache.getInstance().getRandomShard(), user))
-					response.setStatus(NsHttpResponse.OK);
-				else
+				user.setPassword(inf.password);
+				long id = User.put(ShardConfCache.getInstance().getRandomShard(), user);
+				if (id == -1) {
 					response.setStatus(NsHttpResponse.INTERNAL_SERVER_ERROR);
+					return response;
+				}
+				DhtResult rs = Dht.getInstance().put("USERNAME:" + inf.username, Long.toString(id));
+				if (rs.error != 0) {
+					User.delete(id);
+					response.setStatus(NsHttpResponse.INTERNAL_SERVER_ERROR);
+					return response;
+				}
+				response.setStatus(NsHttpResponse.OK);
 				break;
 			default:
 				throw new Exception("unsupported method=" + request.getMethod());
@@ -272,11 +281,11 @@ public class UriMatcher implements INsHttpServerHandler {
 				return shards(request, Integer.parseInt(match.group(1)));
 			}});
 		
-		handlers.put(Pattern.compile("^/user/add$"), new UriHandler() {
+		handlers.put(Pattern.compile("^/user/join$"), new UriHandler() {
 			@Override
 			public NsHttpResponse handle(Matcher match, NsHttpRequest request) throws Exception {
 				// TODO Auto-generated method stub
-				return userAdd(request);
+				return userJoin(request);
 			}});
 	}
 	

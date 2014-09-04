@@ -1,9 +1,6 @@
 package com.mycompany.myapp;
 
-import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,7 +49,7 @@ public class Dht implements IDht {
 			BigInteger hash = DhtKey.hashKey(key);
 			ShardConfNearest nearest = ShardConfCache.getInstance().getNearest(hash);
 			ShardConf conf = nearest.conf;
-			log.info("key=" + key + " hash=" + hash + " nearest=" + nearest.id + " vsid=" + conf.vsid);
+			log.info("put key=" + key + " hash=" + hash + " nearest=" + nearest.id + " vsid=" + conf.vsid);
 			
 			DhtKey keyO = new DhtKey(key, value);			
 			if (DhtKey.insert(conf.vsid, keyO)) {
@@ -74,7 +71,7 @@ public class Dht implements IDht {
 			ShardConfNearest nearest = ShardConfCache.getInstance().getNearest(hash);
 			ShardConf conf = nearest.conf;
 			
-			log.info("key=" + key + " hash=" + hash + " nearest=" + nearest.id + " vsid=" + conf.vsid);
+			log.info("get key=" + key + " hash=" + hash + " nearest=" + nearest.id + " vsid=" + conf.vsid);
 			
 			DhtKey found = DhtKey.loadByKey(conf.vsid, key);
 			if (found != null) {
@@ -86,6 +83,29 @@ public class Dht implements IDht {
 			log.error("exception", e);
 		}
 		
+		return result;
+	}
+
+	@Override
+	public DhtResult remove(String key) {
+		// TODO Auto-generated method stub
+		DhtResult result = new DhtResult();
+		try {
+			BigInteger hash = DhtKey.hashKey(key);
+			ShardConfNearest nearest = ShardConfCache.getInstance().getNearest(hash);
+			ShardConf conf = nearest.conf;
+
+			log.info("remove key=" + key + " hash=" + hash + " nearest=" + nearest.id + " vsid=" + conf.vsid);
+
+			if (DhtKey.delete(conf.vsid, key)) {
+				result.error = 0;
+				result.value = null;
+				result.id = 0;
+			}
+		} catch (Exception e) {
+			log.error("exception", e);
+		}
+
 		return result;
 	}
 }

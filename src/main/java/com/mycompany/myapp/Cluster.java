@@ -66,6 +66,29 @@ public class Cluster {
 		return success;
 	}
 	
+	public static boolean cleanDb(String node, int id, int port) {
+		boolean success = false;
+		log.info("clean db=" + node + " id=" + id + " port=" + port);
+
+		Connection con = null;
+		PreparedStatement st = null;
+		try {
+			con = SqlCon.getCon(shards.get(id));
+			Map<String, Object> params = new HashMap<String, Object>();
+			params.put("vsid", id);
+			st = con.prepareStatement(SqlTemplate.render("db_clean.sql", params));
+			st.executeUpdate();
+			con.commit();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			log.error("exception", e);
+		} finally {
+			SqlCon.close(con, st, null);
+		}
+
+		return success;
+	}
+
 	public static boolean preSetupDb(String node, int id, int port) throws UnsupportedEncodingException {
 		boolean success = false;
 		log.info("presetup db=" + node + " id=" + id + " port=" + port);
@@ -75,7 +98,7 @@ public class Cluster {
 		log.info("conf=" + conf.toString());
 		//conf = ShardConf.loadFromString(conf.toString());
 		//log.info("conf=" + conf.toString());
-		
+		cleanDb(node, id, port);
 		success = true;
 		return success;
 	}

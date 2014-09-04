@@ -89,7 +89,7 @@ public class App
 	        vsid = (int)(Utils.getRndPositiveLong()%2);
 	        user.setUserName(name);
 	        log.info("inserting " + name + " vsid=" + vsid);
-	        User.insert(vsid, user);
+	        User.put(vsid, user);
 	        log.info("inserted " + name);
         }
         
@@ -99,7 +99,7 @@ public class App
         Collections.sort(ids);
         for (Long id : ids) {
         	log.info("loading user by id=" + id +  " vsid=" + ObjId.getVsid(id));
-        	user = User.load(id);
+		user = User.get(id);
             log.info("found user=" + user.getUserName() + " id=" + user.getId() + " vsid=" + ObjId.getVsid(user.getId())
             		+ " time=" + user.getTime());
         }

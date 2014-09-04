@@ -1,5 +1,6 @@
 package com.mycompany.myapp;
 
+import java.security.SecureRandom;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -10,22 +11,24 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.cserver.shared.BCrypt;
 import com.cserver.shared.Utils;
 
 
 public class User {
     private static final Logger log = LoggerFactory.getLogger(User.class);
-    private long id;    
-    private String username;
+    private long id = -1;
+    private String username = null;
+    private String hashp = null;
     
-    public User() {
-    	username = null;
+    public void setPassword(String password) {
+	hashp = BCrypt.hashpw(password, BCrypt.gensalt(12, new SecureRandom()));
+    }
+
+    public boolean checkPassword(String password) {
+	return BCrypt.checkpw(password, hashp);
     }
     
-    public User(User s){
-    	username = s.getUserName();
-    }   
-
     public long getId() {
         return id;
     }
@@ -46,14 +49,44 @@ public class User {
     	return Utils.getTimeS(ObjId.getTimeMillis(id));
     }
     
-    static public boolean insert(int vsid, User user) {
-    	boolean success = false;
+    static public long put(int vsid, User user) {
+	long id = -1;
     	Connection con = null;
     	PreparedStatement st = null;
+	ResultSet rs = null;
     	try {
     		con = SqlCon.getCon(vsid);
-    		st = con.prepareStatement("INSERT INTO Users(username) VALUES(?);");
+		con.setAutoCommit(true);
+		st = con.prepareStatement("INSERT INTO Users(username, hashp) VALUES(?, ?) RETURNING id;");
     		st.setString(1, user.username);
+		st.setString(2, user.hashp);
+		if (!st.execute()) {
+			throw new SQLException("no result set");
+		}
+		rs = st.getResultSet();
+		if (rs.next()) {
+			id = rs.getLong(1);
+		} else {
+			throw new SQLException("no returning id");
+		}
+	} catch (SQLException e) {
+		log.error("exception", e);
+	} finally {
+		SqlCon.close(con, st, null);
+	}
+	return id;
+    }
+
+    static public boolean delete(long id) {
+	int vsid = ObjId.getVsid(id);
+	Connection con = null;
+	PreparedStatement st = null;
+	boolean success = false;
+
+	try {
+		con = SqlCon.getCon(vsid);
+		st = con.prepareStatement("DELETE FROM Users WHERE id = ?;");
+		st.setLong(1, id);
     		st.executeUpdate();
     		con.commit();
     		success = true;
@@ -62,10 +95,11 @@ public class User {
     	} finally {
     		SqlCon.close(con, st, null);
     	}
+
     	return success;
     }
     
-    static public User load(long id) {
+    static public User get(long id) {
     	Connection con = null;
     	PreparedStatement st = null;
     	ResultSet rs = null;
@@ -74,13 +108,14 @@ public class User {
     	int vsid = ObjId.getVsid(id);
     	try {
     		con = SqlCon.getCon(vsid);
-    		st = con.prepareStatement("SELECT id, username FROM Users WHERE id = ?;");
+		st = con.prepareStatement("SELECT id, username, hashp FROM Users WHERE id = ?;");
     		st.setLong(1, id);
     		rs = st.executeQuery();
             if (rs.next()) {
             	user = new User();
             	user.id = rs.getLong(1);
             	user.username = rs.getString(2);
+		user.hashp = rs.getString(3);
             }
     		con.commit();
     	} catch (SQLException e) {

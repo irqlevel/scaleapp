@@ -36,19 +36,26 @@ public class ShardConfCache {
 		return vsid;
 	}
 	
-	public boolean put(ShardConf conf) throws Base64DecoderException
+	public boolean update(ShardConf conf) throws Base64DecoderException
 	{
 		boolean success = false;
 		synchronized(this) {
 			log.info("putting conf with vsid=" + conf.vsid);
-			if (vsidConfMap.get(conf.vsid) == null) {
-				vsidConfMap.put(conf.vsid, conf);
-				for (BigInteger id : conf.getIntNodeIds()) {
-					nodeIdConfTree.put(id, conf);
-					log.info("vsid=" + conf.vsid + " nodeId=" + id);
+			if (vsidConfMap.get(conf.vsid) != null) {
+				ShardConf removed = vsidConfMap.remove(conf.vsid);
+				if (removed != null) {
+					for (BigInteger id : removed.getIntNodeIds()) {
+						nodeIdConfTree.delete(id);
+					}
 				}
-				success = true;
 			}
+
+			vsidConfMap.put(conf.vsid, conf);
+			for (BigInteger id : conf.getIntNodeIds()) {
+				nodeIdConfTree.put(id, conf);
+				log.info("vsid=" + conf.vsid + " nodeId=" + id);
+			}
+			success = true;
 		}
 		
 		return success;
