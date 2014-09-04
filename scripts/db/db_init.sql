@@ -17,14 +17,14 @@ $$ LANGUAGE PLPGSQL;
 
 CREATE TABLE Users (
 	"id" bigint NOT NULL DEFAULT db_next_id(),
-	"username" varchar(255),
-	"hashp"	varchar(255)
+	"username" varchar(255) UNIQUE NOT NULL,
+	"hashp"	varchar(255) NOT NULL
 );
 
 CREATE TABLE DhtKeys (
 	"id" bigint NOT NULL DEFAULT db_next_id(),
-	"key" varchar(255),
-	"value" varchar(255),
-	"hash"	varchar(255)
+	"key" varchar(255) UNIQUE NOT NULL,
+	"value" varchar(255) NOT NULL,
+	"hash"	varchar(255) NOT NULL
 );
 
