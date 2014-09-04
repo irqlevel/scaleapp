@@ -29,6 +29,8 @@ RUN yum -y localinstall jdk-8u20-linux-x64.rpm
 RUN tar -xzvf apache-maven-3.2.3-bin.tar.gz
 
 RUN git clone https://github.com/irqlevel/scaleapp.git
+RUN git config --global user.email irqlevel@gmail.com
+RUN git config --global user.name "Andrey Smetanin"
 
 RUN cd /scaleapp && /apache-maven-3.2.3/bin/mvn package
 
@@ -40,6 +42,7 @@ VOLUME /scaleapp
 # Expose ports
 EXPOSE 8080
 
+RUN yum -y install vim
 RUN yum -y install postgresql
 # Set the default command to execute
 # when creating a new container
