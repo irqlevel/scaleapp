@@ -163,7 +163,9 @@ public class UriMatcher implements INsHttpServerHandler {
 		try {
 			Map<String, Object> params = new HashMap<String, Object>();
 			params.put("uri", request.getUri());
-			return renderTemplate("404.html", params);
+			NsHttpResponse response = renderTemplate("404.html", params);
+			response.setStatus(NsHttpResponse.NOT_FOUND);
+			return response;
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			log.error("exception=", e);
@@ -173,7 +175,9 @@ public class UriMatcher implements INsHttpServerHandler {
 	
 	private NsHttpResponse renderInternalServerError(NsHttpRequest request) {
 		try {
-			return renderTemplateSimple("500.html");
+			NsHttpResponse response = renderTemplateSimple("500.html");
+			response.setStatus(NsHttpResponse.INTERNAL_SERVER_ERROR);
+			return response;
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			log.error("exception=", e);
