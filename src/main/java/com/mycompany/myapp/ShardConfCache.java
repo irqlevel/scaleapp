@@ -1,10 +1,7 @@
 package com.mycompany.myapp;
 
-import java.io.File;
 import java.math.BigInteger;
-import java.nio.file.FileSystems;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -12,7 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cserver.shared.Base64DecoderException;
-import com.cserver.shared.FileOps;
+
 
 
 public class ShardConfCache {
@@ -78,21 +75,6 @@ public class ShardConfCache {
 	}
 	
 	private void setup() throws Base64DecoderException {
-		List<String> files = FileOps.getFileNames(FileSystems.getDefault().getPath("conf"));
-		for (String file : files) {
-			log.info("process file=" + file);
-			if (file.matches("^.+shardconf_\\d+\\.json$")) {
-				ShardConf conf = ShardConf.loadFromFile(new File(file));
-				synchronized(this) {
-					log.info("cache conf " + file +" with vsid=" + conf.vsid);
-					vsidConfMap.put(conf.vsid, conf);
-					for (BigInteger id : conf.getIntNodeIds()) {
-						nodeIdConfTree.put(id, conf);
-						log.info("vsid=" + conf.vsid + " nodeId=" + id);
-					}
-				}
-			}
-		}
 	}
 	
 	public ShardConfNearest getNearest(BigInteger id) {

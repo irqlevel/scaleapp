@@ -1,6 +1,5 @@
 package com.mycompany.myapp;
 
-import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -18,7 +17,6 @@ import com.cserver.shared.SLog;
 import com.cserver.shared.HttpConn;
 
 public class Cluster {
-	private static final String TAG = "Cluster";
     private static final Logger log = LoggerFactory.getLogger(Cluster.class);
     private static Map<Pattern, ClusterNodeHandler> handlers = new HashMap<Pattern, ClusterNodeHandler>();
     public static final int PRE_SETUP = 1;

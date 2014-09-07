@@ -10,16 +10,13 @@ import com.cserver.shared.Base64DecoderException;
 public class Dht implements IDht {
     private static final Logger log = LoggerFactory.getLogger(Dht.class);
     private static volatile Dht instance = null;
-    private int vsid = -1;
-    private ShardConf conf = null;
+
         
     private Dht() {
     	
     }
     
     private void setup() throws Base64DecoderException {
-    	vsid = App.getInstance().getVsid();
-    	conf = ShardConfCache.getInstance().getByVsid(vsid);
     }
     
     static public Dht getInstance() {
@@ -42,7 +39,7 @@ public class Dht implements IDht {
     }
     
 	@Override
-	public DhtResult put(String key, String value) {
+	public DhtResult put(String tableName, String key, String value) {
 		// TODO Auto-generated method stub
 		DhtResult result = new DhtResult();
 		try {
@@ -52,7 +49,7 @@ public class Dht implements IDht {
 			log.info("put key=" + key + " hash=" + hash + " nearest=" + nearest.id + " vsid=" + conf.vsid);
 			
 			DhtKey keyO = new DhtKey(key, value);			
-			if (DhtKey.insert(conf.vsid, keyO)) {
+			if (DhtKey.insert(tableName, conf.vsid, keyO)) {
 				result.error = 0;
 			}
 		} catch (Exception e) {
@@ -63,7 +60,7 @@ public class Dht implements IDht {
 	}
 	
 	@Override
-	public DhtResult get(String key) {
+	public DhtResult get(String tableName, String key) {
 		// TODO Auto-generated method stub
 		DhtResult result = new DhtResult();
 		try {
@@ -73,7 +70,7 @@ public class Dht implements IDht {
 			
 			log.info("get key=" + key + " hash=" + hash + " nearest=" + nearest.id + " vsid=" + conf.vsid);
 			
-			DhtKey found = DhtKey.loadByKey(conf.vsid, key);
+			DhtKey found = DhtKey.loadByKey(tableName, conf.vsid, key);
 			if (found != null) {
 				result.error = 0;
 				result.value = found.getValue();
@@ -87,7 +84,7 @@ public class Dht implements IDht {
 	}
 
 	@Override
-	public DhtResult remove(String key) {
+	public DhtResult remove(String tableName, String key) {
 		// TODO Auto-generated method stub
 		DhtResult result = new DhtResult();
 		try {
@@ -97,7 +94,7 @@ public class Dht implements IDht {
 
 			log.info("remove key=" + key + " hash=" + hash + " nearest=" + nearest.id + " vsid=" + conf.vsid);
 
-			if (DhtKey.delete(conf.vsid, key)) {
+			if (DhtKey.delete(tableName, conf.vsid, key)) {
 				result.error = 0;
 				result.value = null;
 				result.id = 0;

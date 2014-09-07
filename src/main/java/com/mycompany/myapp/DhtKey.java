@@ -66,14 +66,18 @@ public class DhtKey {
     	return Utils.getTimeS(ObjId.getTimeMillis(id));
     }
     
-    static public boolean insert(int vsid, DhtKey key) {
+    public static String FullTableName(String tableName) {
+	return "DHT_" + tableName;
+    }
+
+    static public boolean insert(String tableName, int vsid, DhtKey key) {
     	Connection con = null;
     	PreparedStatement st = null;
     	boolean success = false;
    	
     	try {
     		con = SqlCon.getCon(vsid);
-    		st = con.prepareStatement("INSERT INTO DhtKeys(key,value,hash) VALUES(?,?,?);");
+		st = con.prepareStatement("INSERT INTO " + FullTableName(tableName) + " (key,value,hash) VALUES(?,?,?);");
     		st.setString(1, key.key);
     		st.setString(2, key.value);
     		st.setString(3, key.hash);
@@ -89,14 +93,14 @@ public class DhtKey {
     	return success;
     }
     
-    static public boolean update(int vsid, String key, String value) {
+    static public boolean update(String tableName, int vsid, String key, String value) {
     	Connection con = null;
     	PreparedStatement st = null;
     	boolean success = false;
    	
     	try {
     		con = SqlCon.getCon(vsid);
-    		st = con.prepareStatement("UPDATE DhtKeys SET value = ? WHERE key = ?");
+		st = con.prepareStatement("UPDATE " + FullTableName(tableName) + " SET value = ? WHERE key = ?");
     		st.setString(1, value);
     		st.setString(2, key);
     		st.executeUpdate();
@@ -111,14 +115,15 @@ public class DhtKey {
     	return success;
     }
     
-    static public boolean delete(int vsid, String key) {
+    static public boolean delete(String tableName, int vsid, String key) {
     	Connection con = null;
     	PreparedStatement st = null;
     	boolean success = false;
    	
     	try {
     		con = SqlCon.getCon(vsid);
-    		st = con.prepareStatement("DELETE FROM DhtKeys WHERE key = ?");
+		st = con.prepareStatement("DELETE " + FullTableName(tableName) + " FROM "
+				+ FullTableName(tableName) + " WHERE key = ?");
     		st.setString(1, key);
     		st.executeUpdate();
     		con.commit();
@@ -132,7 +137,7 @@ public class DhtKey {
     	return success;
     }
     
-    static public DhtKey loadById(long id) {
+    static public DhtKey loadById(String tableName, long id) {
     	Connection con = null;
     	PreparedStatement st = null;
     	ResultSet rs = null;
@@ -140,7 +145,7 @@ public class DhtKey {
     	int vsid = ObjId.getVsid(id);
     	try {
     		con = SqlCon.getCon(vsid);
-    		st = con.prepareStatement("SELECT id, key, value, hash FROM DhtKeys WHERE id = ?;");
+		st = con.prepareStatement("SELECT id, key, value, hash FROM " + FullTableName(tableName) + " WHERE id = ?;");
     		st.setLong(1, id);
     		rs = st.executeQuery();
             if (rs.next()) {
@@ -160,7 +165,7 @@ public class DhtKey {
     	return found;
     }
     
-    static public DhtKey loadByKey(int vsid, String key) {
+    static public DhtKey loadByKey(String tableName, int vsid, String key) {
     	Connection con = null;
     	PreparedStatement st = null;
     	ResultSet rs = null;
@@ -168,7 +173,7 @@ public class DhtKey {
     	
     	try {
     		con = SqlCon.getCon(vsid);
-    		st = con.prepareStatement("SELECT id, key, value, hash FROM DhtKeys WHERE key = ?;");
+		st = con.prepareStatement("SELECT id, key, value, hash FROM " + FullTableName(tableName) + " WHERE key = ?;");
     		st.setString(1, key);
     		rs = st.executeQuery();
             if (rs.next()) {
@@ -188,14 +193,14 @@ public class DhtKey {
     	return found;
     }
     
-    static public List<Long> allIds(int vsid) {
+    static public List<Long> allIds(String tableName, int vsid) {
     	Connection con = null;
     	PreparedStatement st = null;
     	ResultSet rs = null;
     	List<Long> ids = new ArrayList<Long>();
     	try {
     		con = SqlCon.getCon(vsid);
-    		st = con.prepareStatement("SELECT id FROM DhtKeys;");
+		st = con.prepareStatement("SELECT id FROM " + FullTableName(tableName) + ";");
     		rs = st.executeQuery();
             while (rs.next()) {
             	ids.add(rs.getLong(1));

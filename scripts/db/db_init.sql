@@ -21,10 +21,16 @@ CREATE TABLE Users (
 	"hashp"	varchar(255) NOT NULL
 );
 
-CREATE TABLE DhtKeys (
+CREATE TABLE DHT_USERNAME (
 	"id" bigint NOT NULL DEFAULT db_next_id(),
 	"key" varchar(255) UNIQUE NOT NULL,
 	"value" varchar(255) NOT NULL,
 	"hash"	varchar(255) NOT NULL
 );
 
+CREATE TABLE DHT_SESSION (
+	"id" bigint NOT NULL DEFAULT db_next_id(),
+	"key" varchar(255) UNIQUE NOT NULL,
+	"value" varchar(255) NOT NULL,
+	"hash"	varchar(255) NOT NULL
+);
