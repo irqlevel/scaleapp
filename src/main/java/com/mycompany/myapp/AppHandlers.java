@@ -102,22 +102,33 @@ public class AppHandlers {
 
 		switch (request.getMethod()) {
 			case NsHttpRequest.PUT:
+				AppResult result = new AppResult();
 				UserJoin inf = UserJoin.parseString(new String(request.getContentBytes(), "UTF-8"));
 				log.info("adding user=" + inf.toString());
 				User user = new User();
 				user.setUserName(inf.username);
 				user.setPassword(inf.password);
-				long id = User.put(ShardConfCache.getInstance().getRandomShard(), user);
-				if (id == -1) {
+				long uid = User.put(ShardConfCache.getInstance().getRandomShard(), user);
+				if (uid == -1) {
+					result.setError(AppError.INTERNAL_SERVER_ERROR);
+					response.setJson(result.toString());
 					response.setStatus(NsHttpResponse.INTERNAL_SERVER_ERROR);
 					return response;
 				}
-				DhtResult rs = Dht.getInstance().put("USERNAME", inf.username, Long.toString(id));
+
+				DhtResult rs = Dht.getInstance().put("USERNAME", inf.username, Long.toString(uid));
 				if (rs.error != 0) {
-					User.delete(id);
+					User.delete(uid);
+					result.setError(AppError.ACCOUNT_ALREADY_REGISTRED);
+					response.setJson(result.toString());
 					response.setStatus(NsHttpResponse.INTERNAL_SERVER_ERROR);
 					return response;
 				}
+
+				log.info("user=" + user.getUserName() + " was added, id=" + uid);
+				result.setError(AppError.SUCCESS);
+				result.setUid(uid);
+				response.setJson(result.toString());
 				response.setStatus(NsHttpResponse.OK);
 				break;
 			default:
