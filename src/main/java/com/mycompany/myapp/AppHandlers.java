@@ -112,7 +112,7 @@ public class AppHandlers {
 				if (uid == -1) {
 					result.setError(AppError.INTERNAL_SERVER_ERROR);
 					response.setJson(result.toString());
-					response.setStatus(NsHttpResponse.INTERNAL_SERVER_ERROR);
+					response.setStatus(NsHttpResponse.OK);
 					return response;
 				}
 
@@ -121,7 +121,7 @@ public class AppHandlers {
 					User.delete(uid);
 					result.setError(AppError.ACCOUNT_ALREADY_REGISTRED);
 					response.setJson(result.toString());
-					response.setStatus(NsHttpResponse.INTERNAL_SERVER_ERROR);
+					response.setStatus(NsHttpResponse.OK);
 					return response;
 				}
 

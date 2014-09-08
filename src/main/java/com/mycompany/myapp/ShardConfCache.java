@@ -134,7 +134,7 @@ public class ShardConfCache {
     	if (instance != null)
     		return instance;
     	
-    	synchronized(Dht.class) {
+    	synchronized(ShardConfCache.class) {
     		if (instance == null) {
     			ShardConfCache cache = new ShardConfCache();
     			try {
