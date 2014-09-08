@@ -110,7 +110,7 @@ public class AppHandlers {
 				long uid = User.put(ShardConfCache.getInstance().getRandomShard(), user);
 				if (uid == -1) {
 					log.error("cant put user");
-					result.setError(AppError.INTERNAL_SERVER_ERROR);
+					result.setError(AppError.ACCOUNT_ALREADY_REGISTRED);
 					response.setJson(result.toString());
 					response.setStatus(NsHttpResponse.OK);
 					return response;
