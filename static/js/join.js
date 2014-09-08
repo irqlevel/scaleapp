@@ -8,7 +8,7 @@ joinApp.controller('joinCtrl',  ['$scope', '$http', function($scope, $http) {
 	$scope.joinUser = function() {
 		console.log("email=" + $scope.email);
 		console.log("password=" + $scope.password);
-		$http.put('/user/join', JSON.stringify({email : $scope.email, password : $scope.password})).
+		$http.put('/user/join', JSON.stringify({username : $scope.email, password : $scope.password})).
 		success(
 			function (data, status) {
 				console.log("data=" + data);
