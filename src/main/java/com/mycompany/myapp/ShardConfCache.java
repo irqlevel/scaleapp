@@ -1,7 +1,10 @@
 package com.mycompany.myapp;
 
+import java.io.File;
 import java.math.BigInteger;
+import java.nio.file.FileSystems;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -9,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cserver.shared.Base64DecoderException;
+import com.cserver.shared.FileOps;
 
 
 
@@ -18,6 +22,7 @@ public class ShardConfCache {
 
 	private static volatile ShardConfCache instance = null;
     private static final Logger log = LoggerFactory.getLogger(ShardConfCache.class);
+    private static final String confPath = "conf";
     
 	private ShardConfCache() {
 		
@@ -33,25 +38,47 @@ public class ShardConfCache {
 		return vsid;
 	}
 	
+	private void __insert(ShardConf conf) throws Base64DecoderException {
+		vsidConfMap.put(conf.vsid, conf);
+		for (BigInteger id : conf.getIntNodeIds()) {
+			nodeIdConfTree.put(id, conf);
+			log.info("vsid=" + conf.vsid + " nodeId=" + id);
+		}
+		__saveConfFile(conf);
+	}
+	
+	private String __fileName(int vsid) {
+		return "shardconf_" + Integer.toString(vsid) + ".json";
+	}
+
+	private void __saveConfFile(ShardConf conf) throws Base64DecoderException {
+		FileOps.writeFile(new File("conf", __fileName(conf.vsid)), conf.toString());
+	}
+	
+	private void __deleteConfFile(int vsid) {
+		FileOps.deleteFileRecursive(new File("conf", __fileName(vsid)));
+	}
+	
+	private void __remove(int vsid) throws Base64DecoderException {
+		if (vsidConfMap.get(vsid) != null) {
+			ShardConf removed = vsidConfMap.remove(vsid);
+			if (removed != null) {
+				for (BigInteger id : removed.getIntNodeIds()) {
+					nodeIdConfTree.delete(id);
+				}
+			}
+		}
+		__deleteConfFile(vsid);
+	}
+	
 	public boolean update(ShardConf conf) throws Base64DecoderException
 	{
 		boolean success = false;
 		synchronized(this) {
 			log.info("putting conf with vsid=" + conf.vsid);
-			if (vsidConfMap.get(conf.vsid) != null) {
-				ShardConf removed = vsidConfMap.remove(conf.vsid);
-				if (removed != null) {
-					for (BigInteger id : removed.getIntNodeIds()) {
-						nodeIdConfTree.delete(id);
-					}
-				}
-			}
+			__remove(conf.vsid);
+			__insert(conf);
 
-			vsidConfMap.put(conf.vsid, conf);
-			for (BigInteger id : conf.getIntNodeIds()) {
-				nodeIdConfTree.put(id, conf);
-				log.info("vsid=" + conf.vsid + " nodeId=" + id);
-			}
 			success = true;
 		}
 		
@@ -62,19 +89,24 @@ public class ShardConfCache {
 		boolean success = false;
 		synchronized(this) {
 			log.info("deleting conf with vsid=" + vsid);
-			ShardConf conf = vsidConfMap.remove(vsid);
-			if (conf != null) { 
-				for (BigInteger id : conf.getIntNodeIds()) {
-					nodeIdConfTree.delete(id);
-				}
-				success = true;
-			}
+			__remove(vsid);
 		}
 		
 		return success;
 	}
-	
-	private void setup() throws Base64DecoderException {
+		
+	private void load() throws Base64DecoderException {
+		List<String> files = FileOps.getFileNames(FileSystems.getDefault().getPath(confPath));
+		for (String file : files) {
+			log.info("process file=" + file);
+			if (file.matches("^.+shardconf_\\d+\\.json$")) {
+				ShardConf conf = ShardConf.loadFromFile(new File(file));
+				synchronized(this) {
+					__remove(conf.vsid);
+					__insert(conf);
+				}
+			}
+		}
 	}
 	
 	public ShardConfNearest getNearest(BigInteger id) {
@@ -106,7 +138,7 @@ public class ShardConfCache {
     		if (instance == null) {
     			ShardConfCache cache = new ShardConfCache();
     			try {
-    				cache.setup();
+    				cache.load();
     			} catch (Exception e) {
     				log.error("exception", e);
     				cache = null;
