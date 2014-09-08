@@ -50,43 +50,43 @@ public class User {
     }
     
     static public long put(int vsid, User user) {
-	long id = -1;
+    	long id = -1;
     	Connection con = null;
     	PreparedStatement st = null;
-	ResultSet rs = null;
+    	ResultSet rs = null;
     	try {
     		con = SqlCon.getCon(vsid);
-		con.setAutoCommit(true);
-		st = con.prepareStatement("INSERT INTO Users(username, hashp) VALUES(?, ?) RETURNING id;");
+    		con.setAutoCommit(true);
+    		st = con.prepareStatement("INSERT INTO Users(username, hashp) VALUES(?, ?) RETURNING id;");
     		st.setString(1, user.username);
-		st.setString(2, user.hashp);
-		if (!st.execute()) {
-			throw new SQLException("no result set");
-		}
-		rs = st.getResultSet();
-		if (rs.next()) {
-			id = rs.getLong(1);
-		} else {
-			throw new SQLException("no returning id");
-		}
-	} catch (SQLException e) {
-		log.error("exception", e);
-	} finally {
-		SqlCon.close(con, st, null);
-	}
-	return id;
+    		st.setString(2, user.hashp);
+    		if (!st.execute()) {
+    			throw new SQLException("no result set");
+    		}
+    		rs = st.getResultSet();
+    		if (rs.next()) {
+    			id = rs.getLong(1);
+    		} else {
+    			throw new SQLException("no returning id");
+    		}
+    	} catch (SQLException e) {
+    		log.error("exception", e);
+    	} finally {
+    		SqlCon.close(con, st, rs);
+    	}
+    	return id;
     }
 
     static public boolean delete(long id) {
-	int vsid = ObjId.getVsid(id);
-	Connection con = null;
-	PreparedStatement st = null;
-	boolean success = false;
+		int vsid = ObjId.getVsid(id);
+		Connection con = null;
+		PreparedStatement st = null;
+		boolean success = false;
 
-	try {
-		con = SqlCon.getCon(vsid);
-		st = con.prepareStatement("DELETE FROM Users WHERE id = ?;");
-		st.setLong(1, id);
+		try {
+			con = SqlCon.getCon(vsid);
+			st = con.prepareStatement("DELETE FROM Users WHERE id = ?;");
+			st.setLong(1, id);
     		st.executeUpdate();
     		con.commit();
     		success = true;
@@ -108,14 +108,14 @@ public class User {
     	int vsid = ObjId.getVsid(id);
     	try {
     		con = SqlCon.getCon(vsid);
-		st = con.prepareStatement("SELECT id, username, hashp FROM Users WHERE id = ?;");
+    		st = con.prepareStatement("SELECT id, username, hashp FROM Users WHERE id = ?;");
     		st.setLong(1, id);
     		rs = st.executeQuery();
             if (rs.next()) {
             	user = new User();
             	user.id = rs.getLong(1);
             	user.username = rs.getString(2);
-		user.hashp = rs.getString(3);
+            	user.hashp = rs.getString(3);
             }
     		con.commit();
     	} catch (SQLException e) {

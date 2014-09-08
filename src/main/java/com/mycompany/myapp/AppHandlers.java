@@ -118,7 +118,8 @@ public class AppHandlers {
 
 				DhtResult rs = Dht.getInstance().put("USERNAME", inf.username, Long.toString(uid));
 				if (rs.error != 0) {
-					User.delete(uid);
+					if (uid != -1)
+						User.delete(uid);
 					result.setError(AppError.ACCOUNT_ALREADY_REGISTRED);
 					response.setJson(result.toString());
 					response.setStatus(NsHttpResponse.OK);

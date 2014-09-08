@@ -77,7 +77,7 @@ public class DhtKey {
    	
     	try {
     		con = SqlCon.getCon(vsid);
-		st = con.prepareStatement("INSERT INTO " + FullTableName(tableName) + " (key,value,hash) VALUES(?,?,?);");
+    		st = con.prepareStatement("INSERT INTO " + FullTableName(tableName) + " (key,value,hash) VALUES(?,?,?);");
     		st.setString(1, key.key);
     		st.setString(2, key.value);
     		st.setString(3, key.hash);
@@ -100,7 +100,7 @@ public class DhtKey {
    	
     	try {
     		con = SqlCon.getCon(vsid);
-		st = con.prepareStatement("UPDATE " + FullTableName(tableName) + " SET value = ? WHERE key = ?");
+    		st = con.prepareStatement("UPDATE " + FullTableName(tableName) + " SET value = ? WHERE key = ?");
     		st.setString(1, value);
     		st.setString(2, key);
     		st.executeUpdate();
@@ -122,7 +122,7 @@ public class DhtKey {
    	
     	try {
     		con = SqlCon.getCon(vsid);
-		st = con.prepareStatement("DELETE " + FullTableName(tableName) + " FROM "
+    		st = con.prepareStatement("DELETE " + FullTableName(tableName) + " FROM "
 				+ FullTableName(tableName) + " WHERE key = ?");
     		st.setString(1, key);
     		st.executeUpdate();
@@ -145,7 +145,7 @@ public class DhtKey {
     	int vsid = ObjId.getVsid(id);
     	try {
     		con = SqlCon.getCon(vsid);
-		st = con.prepareStatement("SELECT id, key, value, hash FROM " + FullTableName(tableName) + " WHERE id = ?;");
+    		st = con.prepareStatement("SELECT id, key, value, hash FROM " + FullTableName(tableName) + " WHERE id = ?;");
     		st.setLong(1, id);
     		rs = st.executeQuery();
             if (rs.next()) {
@@ -173,7 +173,7 @@ public class DhtKey {
     	
     	try {
     		con = SqlCon.getCon(vsid);
-		st = con.prepareStatement("SELECT id, key, value, hash FROM " + FullTableName(tableName) + " WHERE key = ?;");
+    		st = con.prepareStatement("SELECT id, key, value, hash FROM " + FullTableName(tableName) + " WHERE key = ?;");
     		st.setString(1, key);
     		rs = st.executeQuery();
             if (rs.next()) {
