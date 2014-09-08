@@ -88,12 +88,12 @@ public class NsHttpServer implements Runnable {
                      ch.pipeline().addLast(new NsHttpServerHandler(handler, Executors.newCachedThreadPool()));
                  }
              })
-             .option(ChannelOption.SO_BACKLOG, 10000)          // (5)
-             .childOption(ChannelOption.SO_KEEPALIVE, true); // (6)
-    
+             .option(ChannelOption.SO_BACKLOG, 10000)
+             .option(ChannelOption.TCP_NODELAY, true)
+             .childOption(ChannelOption.SO_KEEPALIVE, true)
+             .childOption(ChannelOption.TCP_NODELAY, true);
             // Bind and start to accept incoming connections.
             ChannelFuture f = b.bind(port).sync(); // (7)
-    
             // Wait until the server socket is closed.
             // In this example, this does not happen, but you can do that to gracefully
             // shut down your server.
