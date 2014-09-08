@@ -99,7 +99,6 @@ public class AppHandlers {
 
 	public static NsHttpResponse userJoin(NsHttpRequest request) throws Exception {
 		NsHttpResponse response = new NsHttpResponse();
-
 		switch (request.getMethod()) {
 			case NsHttpRequest.PUT:
 				AppResult result = new AppResult();
@@ -110,14 +109,16 @@ public class AppHandlers {
 				user.setPassword(inf.password);
 				long uid = User.put(ShardConfCache.getInstance().getRandomShard(), user);
 				if (uid == -1) {
+					log.error("cant put user");
 					result.setError(AppError.INTERNAL_SERVER_ERROR);
 					response.setJson(result.toString());
 					response.setStatus(NsHttpResponse.OK);
 					return response;
 				}
-
+				log.info("saving username");
 				DhtResult rs = Dht.getInstance().put("USERNAME", inf.username, Long.toString(uid));
 				if (rs.error != 0) {
+					log.error("cant put username");
 					if (uid != -1)
 						User.delete(uid);
 					result.setError(AppError.ACCOUNT_ALREADY_REGISTRED);

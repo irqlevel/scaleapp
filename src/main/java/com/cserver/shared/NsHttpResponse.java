@@ -27,12 +27,13 @@ public class NsHttpResponse {
 	public static final int FORBIDDEN = 403;
 	public static final int NOT_IMPLEMENTED = 501;
 	public static final int INTERNAL_SERVER_ERROR = 500;
-
+	public static final int SERVICE_UNAVAILABLE = 503;
+	
 	private String contentType = "text/plain";
 	private long contentLength = 0;
 	private byte[] content = null;
 	
-	private int status = INTERNAL_SERVER_ERROR;
+	private int status = NOT_IMPLEMENTED;
 		
 	private Map<String, String> headers = new HashMap<String, String>();
 	private List<NsHttpCookie> cookies = new ArrayList<NsHttpCookie>();
@@ -121,6 +122,9 @@ public class NsHttpResponse {
 			return HttpResponseStatus.NOT_IMPLEMENTED;
 		case INTERNAL_SERVER_ERROR:
 			return HttpResponseStatus.INTERNAL_SERVER_ERROR;
+		case SERVICE_UNAVAILABLE:
+			return HttpResponseStatus.SERVICE_UNAVAILABLE;
+		
 		default:
 			return HttpResponseStatus.INTERNAL_SERVER_ERROR;
 		}
