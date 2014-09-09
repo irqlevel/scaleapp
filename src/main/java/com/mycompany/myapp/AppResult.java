@@ -4,7 +4,8 @@ public class AppResult {
 	public int error = AppError.UNDEFINED;
 	public String errorS = AppError.getS(AppError.UNDEFINED);
 	public long uid = -1;
-
+	public String token = null;
+	
 	public static AppResult loadFromString(String json) {
 		AppResult result = new JsonTransformer().parse(json, AppResult.class);
 		return result;
@@ -25,7 +26,11 @@ public class AppResult {
 	public void setUid(long uid) {
 		this.uid = uid;
 	}
-
+	
+	public void setToken(String token) {
+		this.token = token;
+	}
+	
 	public AppResult(int error, long uid) {
 		setError(error);
 		setUid(uid);

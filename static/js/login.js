@@ -14,13 +14,17 @@ app.controller('loginCtrl',  ['$scope', '$http', function($scope, $http) {
 			function (data, status) {
 				console.log("data=" + data);
 				console.log("status=" + status);
-				if (data.error) 
+				if (data.error) {
 					$scope.joinError = data.errorS;
-				else
-					window.location.replace('/profile');
+					delete $window.sessionStorage.token;
+				} else {
+					$window.sessionStorage.token = data.token;
+					$window.location.replace('/profile');
+				}
 			}
 		).
 		error(function (data, status) {
+			delete $window.sessionStorage.token;
 			console.log("error data=" + data);
 			console.log("error status=" + status);
 			$scope.joinError = "HTTP status " + status;

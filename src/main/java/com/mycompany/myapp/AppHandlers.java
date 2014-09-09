@@ -22,6 +22,7 @@ public class AppHandlers {
     public static final String templatesPath = "templates";
 
     public static final String sessionCookieName = "AUTH";
+    private static volatile RythmEngine engine = null;
     
 	public static NsHttpResponse logout(NsHttpRequest request) throws UnsupportedEncodingException {
 		NsHttpResponse response = new NsHttpResponse();
@@ -128,11 +129,16 @@ public class AppHandlers {
 	}
 
 	public static RythmEngine getTemplateRender() {
-		RythmEngine engine = new RythmEngine();
-		Map<String, Object> conf = new HashMap<String, Object>();
-		conf.put("rythm.engine.mode", "dev");
-		conf.put("rythm.home.template.dir", new File(templatesPath).getAbsolutePath());
-		engine = new RythmEngine(conf);
+		synchronized(AppHandlers.class) {
+			if (engine == null) {
+				engine = new RythmEngine();
+				Map<String, Object> conf = new HashMap<String, Object>();
+				conf.put("rythm.engine.mode", "dev");
+				conf.put("rythm.home.template.dir", new File(templatesPath).getAbsolutePath());
+				engine = new RythmEngine(conf);
+			}
+		}
+		
 		return engine;
 	}
 
@@ -236,7 +242,7 @@ public class AppHandlers {
 	}
 
 	public static User userAuth(NsHttpRequest request) {
-		String sessionValue = request.getCookie(sessionCookieName);
+		String sessionValue = request.getHeaders("x-session-token");
 		if (sessionValue == null)
 			return null;
 		
@@ -298,7 +304,7 @@ public class AppHandlers {
 				
 				result.setError(AppError.SUCCESS);
 				result.setUid(uid);
-				response.addCookie(new NsHttpCookie(sessionCookieName, session.value));
+				result.setToken(session.value);
 				response.setJson(result.toString());
 				response.setStatus(NsHttpResponse.OK);
 				break;
