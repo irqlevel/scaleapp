@@ -9,7 +9,7 @@ loginApp.controller('loginCtrl',  ['$scope', '$http', function($scope, $http) {
 		$scope.joinError = '';
 		console.log("email=" + $scope.email);
 		console.log("password=" + $scope.password);
-		$http.put('/user/login', JSON.stringify({username : $scope.email, password : $scope.password})).
+		$http.post('/user/login', JSON.stringify({username : $scope.email, password : $scope.password})).
 		success(
 			function (data, status) {
 				console.log("data=" + data);
