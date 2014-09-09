@@ -1,5 +1,5 @@
-var loginApp = angular.module('loginApp', []);
-loginApp.controller('loginCtrl',  ['$scope', '$http', function($scope, $http) {
+var app = angular.module('app', []);
+app.controller('loginCtrl',  ['$scope', '$http', function($scope, $http) {
 	$scope.loginError = '';
 	$scope.loginErrorExists = function() {
 		return $scope.loginError != '';

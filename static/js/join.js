@@ -1,5 +1,5 @@
-var joinApp = angular.module('joinApp', []);
-joinApp.controller('joinCtrl',  ['$scope', '$http', function($scope, $http) {
+var app = angular.module('app', []);
+app.controller('joinCtrl',  ['$scope', '$http', function($scope, $http) {
 	$scope.joinError = '';
 	$scope.joinErrorExists = function() {
 		return $scope.joinError != '';
