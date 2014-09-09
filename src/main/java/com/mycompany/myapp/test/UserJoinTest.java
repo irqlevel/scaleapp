@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 import com.cserver.shared.HttpConn;
 import com.cserver.shared.SLog;
 import com.cserver.shared.Utils;
-import com.mycompany.myapp.UserJoin;
+import com.mycompany.myapp.UserAuthInfo;
 
 public class UserJoinTest {
     private static final Logger log = LoggerFactory.getLogger(ShardsUploadTest.class);
@@ -14,7 +14,7 @@ public class UserJoinTest {
 		SLog.startDefault();
 		for (int i = 0; i < 2; i++) {
 			try {
-				UserJoin inf = new UserJoin();
+				UserAuthInfo inf = new UserAuthInfo();
 				inf.username = Utils.getRndString(8);
 				inf.password = Utils.getRndString(8);
 				//String out = HttpConn.get("http", "10.30.16.33", 49160, "/");

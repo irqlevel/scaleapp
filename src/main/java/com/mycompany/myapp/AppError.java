@@ -62,7 +62,8 @@ public class AppError {
 	public static final int STRING_ENCODING_ERROR = 52;
 	public static final int BAD_REQUEST_FORMAT = 53;
 	public static final int UNDEFINED = 54;
-
+	public static final int ACCOUNT_NOT_FOUND = 55;
+	
 	public static void load() {
 		errorsMap.put(SUCCESS, "success");
 		errorsMap.put(ACCOUNT_ALREADY_REGISTRED, "This account already registred");
@@ -120,6 +121,7 @@ public class AppError {
 		errorsMap.put(STRING_ENCODING_ERROR, "string encoding error");
 		errorsMap.put(BAD_REQUEST_FORMAT, "bad request format");
 		errorsMap.put(UNDEFINED, "undefined");
+		errorsMap.put(ACCOUNT_NOT_FOUND, "account not found");
 	}
 
 	static {

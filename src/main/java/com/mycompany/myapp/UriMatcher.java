@@ -63,12 +63,11 @@ public class UriMatcher implements INsHttpServerHandler {
 				return AppHandlers.join(request);
 			}});
 		
-		
-		handlers.put(Pattern.compile("^/profile/(\\d+)$"), new UriHandler() {
+		handlers.put(Pattern.compile("^/profile$"), new UriHandler() {
 			@Override
 			public NsHttpResponse handle(Matcher match, NsHttpRequest request) throws NumberFormatException, UnsupportedEncodingException {
 				// TODO Auto-generated method stub
-				return AppHandlers.profile(request, Long.parseLong(match.group(1)));
+				return AppHandlers.profile(request);
 			}});
 
 		handlers.put(Pattern.compile("^/" + AppHandlers.staticUri + "/(.+)$"), new UriHandler() {
@@ -92,10 +91,16 @@ public class UriMatcher implements INsHttpServerHandler {
 				// TODO Auto-generated method stub
 				return AppHandlers.userJoin(request);
 			}});
+		
+		handlers.put(Pattern.compile("^/user/login$"), new UriHandler() {
+			@Override
+			public NsHttpResponse handle(Matcher match, NsHttpRequest request) throws Exception {
+				// TODO Auto-generated method stub
+				return AppHandlers.userLogin(request);
+			}});
 	}
 	
 	public NsHttpResponse handle(NsHttpRequest request) {
-		
 		try {
 			for (Pattern p : handlers.keySet()) {
 				Matcher m = p.matcher(request.getUri());

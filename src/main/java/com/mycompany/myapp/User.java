@@ -6,12 +6,15 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cserver.shared.BCrypt;
+import com.cserver.shared.JsonHelper;
 import com.cserver.shared.Utils;
 
 
@@ -20,13 +23,21 @@ public class User {
     private long id = -1;
     private String username = null;
     private String hashp = null;
+    private AppSession session = null;
+    
+    public AppSession getSession() {
+    	return session;
+    }
+    public void setSession(AppSession session) {
+    	this.session = session;
+    }
     
     public void setPassword(String password) {
-	hashp = BCrypt.hashpw(password, BCrypt.gensalt(12, new SecureRandom()));
+    	hashp = BCrypt.hashpw(password, BCrypt.gensalt(12, new SecureRandom()));
     }
 
     public boolean checkPassword(String password) {
-	return BCrypt.checkpw(password, hashp);
+    	return BCrypt.checkpw(password, hashp);
     }
     
     public long getId() {
@@ -147,5 +158,13 @@ public class User {
     	}
     	
     	return ids;
+    }
+    
+    public UserInfo toUserInfo() {
+    	UserInfo inf = new UserInfo();
+    	inf.username = this.username;
+    	inf.uid = this.id;
+    	
+    	return inf;
     }
 }

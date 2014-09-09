@@ -1,11 +1,11 @@
 package com.mycompany.myapp;
 
-public class UserJoin {
+public class UserAuthInfo {
 	public String username;
 	public String password;
 
-	public static UserJoin parseString(String json) {
-		UserJoin result = new JsonTransformer().parse(json, UserJoin.class);
+	public static UserAuthInfo parseString(String json) {
+		UserAuthInfo result = new JsonTransformer().parse(json, UserAuthInfo.class);
 		return result;
 	}
 

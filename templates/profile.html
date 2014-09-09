@@ -1,0 +1,18 @@
+@extends(base)
+@set(title="Profile")
+@section ("content") {
+<div class="row">
+  <div class="col-xs-6 col-sm-4"></div>
+  <div class="col-xs-6 col-sm-4">
+ 	<h2> Profile </h2>
+	@if (user) {
+		<p>@user.username</p>
+		<p>@user.uid</p>
+	}
+  </div>
+  <div class="col-xs-6 col-sm-4"></div>
+</div>
+</div>
+}
+@section ("scripts") {
+}

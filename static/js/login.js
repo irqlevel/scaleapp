@@ -1,15 +1,15 @@
-var joinApp = angular.module('joinApp', []);
-joinApp.controller('joinCtrl',  ['$scope', '$http', function($scope, $http) {
-	$scope.joinError = '';
-	$scope.joinErrorExists = function() {
-		return $scope.joinError != '';
+var loginApp = angular.module('loginApp', []);
+loginApp.controller('loginCtrl',  ['$scope', '$http', function($scope, $http) {
+	$scope.loginError = '';
+	$scope.loginErrorExists = function() {
+		return $scope.loginError != '';
 	};
 
-	$scope.joinUser = function() {
+	$scope.loginUser = function() {
 		$scope.joinError = '';
 		console.log("email=" + $scope.email);
 		console.log("password=" + $scope.password);
-		$http.put('/user/join', JSON.stringify({username : $scope.email, password : $scope.password})).
+		$http.put('/user/login', JSON.stringify({username : $scope.email, password : $scope.password})).
 		success(
 			function (data, status) {
 				console.log("data=" + data);
@@ -17,7 +17,7 @@ joinApp.controller('joinCtrl',  ['$scope', '$http', function($scope, $http) {
 				if (data.error) 
 					$scope.joinError = data.errorS;
 				else
-					window.location.replace('/login');
+					window.location.replace('/profile');
 			}
 		).
 		error(function (data, status) {

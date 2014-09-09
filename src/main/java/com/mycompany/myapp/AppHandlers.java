@@ -21,6 +21,8 @@ public class AppHandlers {
     public static final String staticUri = "static";
     public static final String templatesPath = "templates";
 
+    public static final String sessionCookieName = "AUTH";
+    
 	public static NsHttpResponse logout(NsHttpRequest request) throws UnsupportedEncodingException {
 		NsHttpResponse response = new NsHttpResponse();
 
@@ -36,31 +38,16 @@ public class AppHandlers {
 		return response;
 	}
 
-	public static NsHttpResponse profile(NsHttpRequest request, long id) throws UnsupportedEncodingException {
-		NsHttpResponse response = new NsHttpResponse();
-
-		Map<String, String> result = new HashMap<String, String>();
-		result.put("uri", request.getUri());
-		result.put("host", request.getHeaders("host"));
-		result.put("user-agent", request.getHeaders("User-Agent"));
-		result.put("id", Long.toString(id));
-		result.put("cookies", JsonHelper.setToJson(request.getCookieKeys()));
-
-		try {
-			String petrValue = request.getSignedCookie("petr");
-			result.put("petrValue", petrValue);
-		} catch (Exception e) {
-			log.error("cant get signed cookie", e);
-		}
-
-		response.setStatus(NsHttpResponse.OK);
-		response.setJson(JsonHelper.mapToString(result));
-		response.addSignedCookie(new NsHttpCookie("petr", "33"));
-
-
-		return response;
+	public static NsHttpResponse profile(NsHttpRequest request) throws UnsupportedEncodingException {
+		User user = userAuth(request);
+		if (user == null)
+			return renderNotFound(request);
+		
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("user", user.toUserInfo());
+		
+		return renderTemplate("profile.html", map);
 	}
-
 
 	public static NsHttpResponse shards(NsHttpRequest request, int vsid) throws Exception {
 		NsHttpResponse response = new NsHttpResponse();
@@ -102,7 +89,7 @@ public class AppHandlers {
 		switch (request.getMethod()) {
 			case NsHttpRequest.PUT:
 				AppResult result = new AppResult();
-				UserJoin inf = UserJoin.parseString(new String(request.getContentBytes(), "UTF-8"));
+				UserAuthInfo inf = UserAuthInfo.parseString(new String(request.getContentBytes(), "UTF-8"));
 				log.info("adding user=" + inf.toString());
 				User user = new User();
 				user.setUserName(inf.username);
@@ -248,5 +235,78 @@ public class AppHandlers {
 		return response;
 	}
 
+	public static User userAuth(NsHttpRequest request) {
+		String sessionValue = request.getCookie(sessionCookieName);
+		if (sessionValue == null)
+			return null;
+		
+		DhtResult rs = Dht.getInstance().get("SESSION", sessionValue);
+		if (rs.error != AppError.SUCCESS)
+			return null;
+		
+		AppSession session = AppSession.parseString(rs.value);
+		User user = User.get(session.uid);
+		if (user == null)
+			return null;
+		
+		user.setSession(session);
+		return user;
+	}
+	
+	public static NsHttpResponse userLogin(NsHttpRequest request) throws Exception {
+		NsHttpResponse response = new NsHttpResponse();
+		switch (request.getMethod()) {
+			case NsHttpRequest.POST:
+				AppResult result = new AppResult();
+				
+				UserAuthInfo inf = UserAuthInfo.parseString(new String(request.getContentBytes(), "UTF-8"));
+				log.info("loging user=" + inf.toString());
+				DhtResult rs = Dht.getInstance().get("USERNAME", inf.username);
+				if (rs.error != AppError.SUCCESS) {
+					result.setError(AppError.ACCOUNT_NOT_FOUND);
+					response.setJson(result.toString());
+					response.setStatus(NsHttpResponse.OK);
+					return response;
+				}
+				
+				long uid = Long.parseLong(rs.value);
+				User user = User.get(uid);
+				if (user == null) {
+					result.setError(AppError.ACCOUNT_NOT_FOUND);
+					response.setJson(result.toString());
+					response.setStatus(NsHttpResponse.OK);
+					return response;
+				}
+				
+				if (!user.checkPassword(inf.password)) {
+					result.setError(AppError.ACCOUNT_LOGIN_OR_PASSWORD_INVALID);
+					response.setJson(result.toString());
+					response.setStatus(NsHttpResponse.OK);
+					return response;
+				}
+				
+				AppSession session = AppSession.generate(user.getId(), 24*60*60*1000); //1 day
+				rs = Dht.getInstance().put("SESSION", session.value, session.toString());
+				if (rs.error != AppError.SUCCESS) {
+					result.setError(AppError.INTERNAL_SERVER_ERROR);
+					response.setJson(result.toString());
+					response.setStatus(NsHttpResponse.OK);
+					return response;
+				}
+					
+				log.info("user " + user.getUserName() + " logged session=" + session.value);
+				
+				result.setError(AppError.SUCCESS);
+				result.setUid(uid);
+				response.addCookie(new NsHttpCookie(sessionCookieName, session.value));
+				response.setJson(result.toString());
+				response.setStatus(NsHttpResponse.OK);
+				break;
+			default:
+				throw new Exception("unsupported method=" + request.getMethod());
+		}
+
+		return response;
+	}
 
 }
