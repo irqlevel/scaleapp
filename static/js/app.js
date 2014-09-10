@@ -70,7 +70,7 @@ app.controller('loginCtrl',  ['$scope', '$http', '$window', function($scope, $ht
 				console.log("status=" + status);
 				console.log("error=" + data.error);
 				if (data.error) {
-					$scope.joinError = data.errorS;
+					$scope.loginError = data.errorS;
 					delete $window.sessionStorage.token;
 				} else {
 					$window.sessionStorage.token = data.token;
@@ -82,7 +82,7 @@ app.controller('loginCtrl',  ['$scope', '$http', '$window', function($scope, $ht
 			delete $window.sessionStorage.token;
 			console.log("error data=" + data);
 			console.log("error status=" + status);
-			$scope.joinError = "HTTP status " + status;
+			$scope.loginError = "HTTP status " + status;
 		});
 	};
 }]);

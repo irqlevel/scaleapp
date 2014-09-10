@@ -19,9 +19,11 @@
   </div>
   <button type="submit" class="btn btn-default">Login</button>
 </form>
-<div ng-if="loginErrorExists()">
-	<p>{{loginError}}</p>
+
+<div class="alert alert-danger" role="alert" ng-if="loginErrorExists()">
+	{{loginError}}
 </div>
+
 </div>
 </div>
   <div class="col-xs-6 col-sm-4"></div>
