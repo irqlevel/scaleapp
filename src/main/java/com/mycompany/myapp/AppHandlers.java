@@ -10,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cserver.shared.JsonHelper;
-import com.cserver.shared.NsHttpCookie;
 import com.cserver.shared.NsHttpRequest;
 import com.cserver.shared.NsHttpResponse;
 
@@ -40,14 +39,7 @@ public class AppHandlers {
 	}
 
 	public static NsHttpResponse profile(NsHttpRequest request) throws UnsupportedEncodingException {
-		User user = userAuth(request);
-		if (user == null)
-			return renderNotFound(request);
-		
-		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("user", user.toUserInfo());
-		
-		return renderTemplate("profile.html", map);
+		return renderTemplateSimple("profile.html");
 	}
 
 	public static NsHttpResponse shards(NsHttpRequest request, int vsid) throws Exception {
