@@ -41,7 +41,7 @@
             <li ng-if="!currUser()"><a href="/join">Join</a></li>
             <li ng-if="!currUser()"><a href="/login">Login</a></li>
 	    <li ng-if="currUser()"><a href="/profile">Profile</a></li>
-	    <li ng-if="currUser()"><a href="/logout">Profile</a></li>
+	    <li ng-if="currUser()"><a ng-controller="logoutCtrl" href="#" ng-click="logoutUser()">Logout</a></li>
 	    <li><a href="/contact">Contact</a></li>
           </ul>
         </div><!--/.nav-collapse -->

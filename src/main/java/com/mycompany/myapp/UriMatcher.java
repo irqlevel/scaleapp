@@ -105,6 +105,13 @@ public class UriMatcher implements INsHttpServerHandler {
 				// TODO Auto-generated method stub
 				return AppHandlers.userCurrent(request);
 			}});
+		
+		handlers.put(Pattern.compile("^/user/logout$"), new UriHandler() {
+			@Override
+			public NsHttpResponse handle(Matcher match, NsHttpRequest request) throws Exception {
+				// TODO Auto-generated method stub
+				return AppHandlers.userLogout(request);
+			}});
 	}
 	
 	public NsHttpResponse handle(NsHttpRequest request) {

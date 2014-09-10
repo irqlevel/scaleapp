@@ -104,3 +104,21 @@ app.controller('userCtrl',  ['$scope', '$http', function($scope, $http){
 	}
 
 }]);
+
+app.controller('logoutCtrl',  ['$scope', '$http', function($scope, $http) {
+	$scope.logoutUser = function() {
+		$http.post('/user/logout').
+		success(
+			function (data, status) {
+				delete $window.sessionStorage.token;
+				$window.location.replace('/');
+			}
+		).
+		error(function (data, status) {
+			delete $window.sessionStorage.token;
+			$window.location.replace('/');
+		});
+	};
+}]);
+
+

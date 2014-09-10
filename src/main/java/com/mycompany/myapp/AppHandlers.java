@@ -342,4 +342,29 @@ public class AppHandlers {
 
 		return response;
 	}
+	
+	public static NsHttpResponse userLogout(NsHttpRequest request) throws Exception {
+		NsHttpResponse response = new NsHttpResponse();
+		switch (request.getMethod()) {
+			case NsHttpRequest.POST:
+				AppResult result = new AppResult();
+				
+				User user = userAuth(request);
+				if (user == null) {
+					result.setError(AppError.ACCOUNT_NOT_FOUND);
+					response.setJson(result.toString());
+					response.setStatus(NsHttpResponse.OK);
+					return response;
+				}
+
+				Dht.getInstance().remove("SESSION", user.getSession().value);
+				result.setError(AppError.SUCCESS);		
+				response.setStatus(NsHttpResponse.OK);
+				break;
+			default:
+				throw new Exception("unsupported method=" + request.getMethod());
+		}
+
+		return response;
+	}
 }
