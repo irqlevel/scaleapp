@@ -333,7 +333,7 @@ public class AppHandlers {
 				result.setError(AppError.SUCCESS);
 				result.setUser(user.toUserInfo());
 				result.setUid(user.getId());
-				
+				response.setJson(result.toString());
 				response.setStatus(NsHttpResponse.OK);
 				break;
 			default:
@@ -358,7 +358,8 @@ public class AppHandlers {
 				}
 
 				Dht.getInstance().remove("SESSION", user.getSession().value);
-				result.setError(AppError.SUCCESS);		
+				result.setError(AppError.SUCCESS);
+				response.setJson(result.toString());
 				response.setStatus(NsHttpResponse.OK);
 				break;
 			default:
