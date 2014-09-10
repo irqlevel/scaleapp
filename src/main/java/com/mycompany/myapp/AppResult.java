@@ -5,6 +5,7 @@ public class AppResult {
 	public String errorS = AppError.getS(AppError.UNDEFINED);
 	public long uid = -1;
 	public String token = null;
+	public UserInfo user = null;
 	
 	public static AppResult loadFromString(String json) {
 		AppResult result = new JsonTransformer().parse(json, AppResult.class);
@@ -23,6 +24,10 @@ public class AppResult {
 		setError(error);
 	}
 
+	public void setUser(UserInfo user) {
+		this.user = user;
+	}
+	
 	public void setUid(long uid) {
 		this.uid = uid;
 	}

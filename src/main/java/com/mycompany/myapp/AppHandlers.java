@@ -242,7 +242,7 @@ public class AppHandlers {
 	}
 
 	public static User userAuth(NsHttpRequest request) {
-		String sessionValue = request.getHeaders("x-session-token");
+		String sessionValue = request.getHeaders("X-SESSION-TOKEN");
 		if (sessionValue == null)
 			return null;
 		
@@ -315,4 +315,31 @@ public class AppHandlers {
 		return response;
 	}
 
+	
+	public static NsHttpResponse userCurrent(NsHttpRequest request) throws Exception {
+		NsHttpResponse response = new NsHttpResponse();
+		switch (request.getMethod()) {
+			case NsHttpRequest.GET:
+				AppResult result = new AppResult();
+				
+				User user = userAuth(request);
+				if (user == null) {
+					result.setError(AppError.ACCOUNT_NOT_FOUND);
+					response.setJson(result.toString());
+					response.setStatus(NsHttpResponse.OK);
+					return response;
+				}
+				
+				result.setError(AppError.SUCCESS);
+				result.setUser(user.toUserInfo());
+				result.setUid(user.getId());
+				
+				response.setStatus(NsHttpResponse.OK);
+				break;
+			default:
+				throw new Exception("unsupported method=" + request.getMethod());
+		}
+
+		return response;
+	}
 }

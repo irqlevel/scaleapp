@@ -98,6 +98,13 @@ public class UriMatcher implements INsHttpServerHandler {
 				// TODO Auto-generated method stub
 				return AppHandlers.userLogin(request);
 			}});
+		
+		handlers.put(Pattern.compile("^/user/current$"), new UriHandler() {
+			@Override
+			public NsHttpResponse handle(Matcher match, NsHttpRequest request) throws Exception {
+				// TODO Auto-generated method stub
+				return AppHandlers.userCurrent(request);
+			}});
 	}
 	
 	public NsHttpResponse handle(NsHttpRequest request) {
