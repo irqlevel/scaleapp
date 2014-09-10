@@ -116,12 +116,12 @@ app.controller('profileCtrl',  ['$scope', '$http', '$window', function($scope, $
 			$scope.user = data.user;
 		} else {
 			$scope.user = null;	
-			$window.location.replace('/');
+			$window.location.replace('/login');
 		}
 	})
 	.error(function (data, status) {
 		$scope.user = null;
-		$window.location.replace('/');
+		$window.location.replace('/login');
 	});
 
 	$scope.currUser = function () {
