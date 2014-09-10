@@ -23,7 +23,7 @@ app.config(function ($httpProvider) {
   $httpProvider.interceptors.push('authInterceptor');
 });
 
-app.controller('joinCtrl',  ['$scope', '$http', function($scope, $http) {
+app.controller('joinCtrl',  ['$scope', '$http', '$window', function($scope, $http, $window) {
 	$scope.joinError = '';
 	$scope.joinErrorExists = function() {
 		return $scope.joinError != '';
@@ -38,10 +38,11 @@ app.controller('joinCtrl',  ['$scope', '$http', function($scope, $http) {
 			function (data, status) {
 				console.log("data=" + data);
 				console.log("status=" + status);
+				console.log("error=" + data.error);
 				if (data.error) 
 					$scope.joinError = data.errorS;
 				else
-					window.location.replace('/login');
+					$window.location.replace('/login');
 			}
 		).
 		error(function (data, status) {
@@ -52,7 +53,7 @@ app.controller('joinCtrl',  ['$scope', '$http', function($scope, $http) {
 	};
 }]);
 
-app.controller('loginCtrl',  ['$scope', '$http', function($scope, $http) {
+app.controller('loginCtrl',  ['$scope', '$http', '$window', function($scope, $http, $window) {
 	$scope.loginError = '';
 	$scope.loginErrorExists = function() {
 		return $scope.loginError != '';
@@ -67,6 +68,7 @@ app.controller('loginCtrl',  ['$scope', '$http', function($scope, $http) {
 			function (data, status) {
 				console.log("data=" + data);
 				console.log("status=" + status);
+				console.log("error=" + data.error);
 				if (data.error) {
 					$scope.joinError = data.errorS;
 					delete $window.sessionStorage.token;
@@ -105,7 +107,29 @@ app.controller('userCtrl',  ['$scope', '$http', function($scope, $http){
 
 }]);
 
-app.controller('logoutCtrl',  ['$scope', '$http', function($scope, $http) {
+app.controller('profileCtrl',  ['$scope', '$http', '$window', function($scope, $http, $window) {
+	$scope.user = null;
+
+	$http.get('/user/current')
+	.success(function (data, status) {
+		if (data.error == 0) {
+			$scope.user = data.user;
+		} else {
+			$scope.user = null;	
+			$window.location.replace('/');
+		}
+	})
+	.error(function (data, status) {
+		$scope.user = null;
+		$window.location.replace('/');
+	});
+
+	$scope.currUser = function () {
+		return $scope.user;
+	}
+}]);
+
+app.controller('logoutCtrl',  ['$scope', '$http', '$window', function($scope, $http, $window) {
 	$scope.logoutUser = function() {
 		$http.post('/user/logout').
 		success(
@@ -120,5 +144,4 @@ app.controller('logoutCtrl',  ['$scope', '$http', function($scope, $http) {
 		});
 	};
 }]);
-
 

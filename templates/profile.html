@@ -3,10 +3,12 @@
 @section ("content") {
 <div class="row">
   <div class="col-xs-6 col-sm-4"></div>
-  <div class="col-xs-6 col-sm-4" ng-controller="userCtrl">
- 	<h2> Profile </h2>
-	<p>Username: {{currUser().username}}</p>
-	<p>Uid: {{currUser().uid}}</p>
+  <div class="col-xs-6 col-sm-4" ng-controller="profileCtrl">
+	<div ng-if="currUser()">
+ 		<h2> Profile </h2>
+		<p>Username: {{currUser().username}}</p>
+		<p>Uid: {{currUser().uid}}</p>
+	</div>
   </div>
   <div class="col-xs-6 col-sm-4"></div>
 </div>
