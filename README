@@ -1,7 +1,7 @@
 scaleapp
 =====
 
-web app based on java netty.io with sharding and DHT for scaling...
+web app framework based on java netty.io with sharding and DHT for scaling...
 
 used:
 bootstrap for client ui & css
