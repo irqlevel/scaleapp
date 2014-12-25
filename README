@@ -1,20 +1,18 @@
-scaleapp
-=====
-
+###Scaleapp
 web app framework based on java netty.io with sharding and DHT for scaling...
 
-used:
-bootstrap for client ui & css
-angularjs for client-side logic
-java for server backend
-netty for web server
-postgresql as db server
-senginx for load-balancing
-maven to resolve java dependecies
-docker for QA and R&D to run instances of nodes(see below) inside containers.
+#### Dependencies:
+- bootstrap as client ui and css
+- angularjs as client-side logic
+- java as server backend
+- netty as web server
+- postgresql as db server
+- senginx for load-balancing
+- maven to resolve java dependecies
+- docker to run different types of hosts(see below) inside containers in one physical host.
 
-architecture:
-
+#### Architecture:
+```
 cli1 cli2 ............cliN
     \     \           /
              senginx
@@ -22,13 +20,10 @@ cli1 cli2 ............cliN
           app1 app2 .. appM
          / |  / |      /
       db1   db2 .........dbK
-
-cli1, ..., cliK - web browser clients
-senignx - node with senginx front-end for load-balancing
-app1,..,appM - nodes with app instance (one java .jar running per node)
-db1,...,dbK - nodes with PostgresSQL server inside (one SQL server per node)
-/|\ - network connections.
-
-senginx connects to app servers, and each app server can connect to each db instance to search, store and load data.
-
-
+```
+- cli1, ..., cliK - web browser clients
+- senignx - host with senginx front-end for load-balancing
+- app1,..,appM - hosts with app instance (one java .jar running per host)
+- db1,...,dbK - hosts with PostgresSQL server inside (one SQL server per host)
+- /|\ - network connections.
+- senginx connects to app servers, and each app server can connect to each db instance to search, store and load data.
