@@ -1,6 +1,9 @@
 ###Scaleapp
 web app framework based on java netty.io with sharding and DHT for scaling...
 
+#### Build status:
+[![build status](https://travis-ci.org/irqlevel/scaleapp.svg?branch=master)](https://travis-ci.org/irqlevel/scaleapp)
+
 #### Dependencies:
 - bootstrap as client ui and css
 - angularjs as client-side logic
