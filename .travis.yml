@@ -5,6 +5,9 @@ jdk:
 before_install:
     - sudo apt-get update -qq
 
+script:
+    - mvn package
+
 notifications:
   email:
     on_success: change
