@@ -4,16 +4,6 @@ web app framework based on java netty.io with sharding and DHT for scaling...
 #### Build status:
 [![build status](https://travis-ci.org/irqlevel/scaleapp.svg?branch=master)](https://travis-ci.org/irqlevel/scaleapp)
 
-#### Dependencies:
-- bootstrap as client ui and css
-- angularjs as client-side logic
-- java as server backend
-- netty as web server
-- postgresql as db server
-- senginx for load-balancing
-- maven to resolve java dependecies
-- docker to run different types of hosts(see below) inside containers in one physical host.
-
 #### Architecture:
 ```
 cli1 cli2 ............cliN
@@ -30,3 +20,14 @@ cli1 cli2 ............cliN
 - db1,...,dbK - hosts with PostgresSQL server inside (one SQL server per host)
 - /|\ - network connections.
 - senginx connects to app servers, and each app server can connect to each db instance to search, store and load data.
+
+#### Dependencies:
+- bootstrap as client ui and css
+- angularjs as client-side logic
+- java as server backend
+- netty as web server
+- postgresql as db server
+- senginx for load-balancing
+- maven to resolve java dependecies
+- docker to run different types of hosts(see below) inside containers in one physical host.
+
